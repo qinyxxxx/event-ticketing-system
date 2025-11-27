@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# CDK / Python venv
+.venv/
+venv/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+
+# AWS CDK
+cdk.out/
+
+# macOS junk
+.DS_Store

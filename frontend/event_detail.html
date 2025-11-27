@@ -1,10 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta charset="UTF-8" />
+  <title>Event Detail</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="api.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
-$END$
+
+  <div id="nav">
+    <a href="index.html">Home</a>
+    <a href="my_orders.html">My Orders</a>
+  </div>
+
+  <h1>Event Detail</h1>
+
+  <div id="detail"></div>
+
+  <script>
+    function getEventId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("eventId");
+    }
+
+    async function loadDetail() {
+      const id = getEventId();
+      const res = await apiGet(`/events/${id}`);
+
+      const div = document.getElementById("detail");
+
+      if (res.success) {
+        const ev = res.data;
+
+        div.className = "card";
+        div.innerHTML = `
+          <h2>${ev.name}</h2>
+          <img src="${ev.imageUrl}" width="300" />
+          <p>${ev.description || ""}</p>
+          <p><strong>Remaining Tickets:</strong> ${ev.remainingTickets}</p>
+
+          <input id="qty" type="number" min="1" value="1" /><br/>
+          <button onclick="purchase()">Purchase</button>
+
+          <p id="msg" style="color: green; margin-top:10px;"></p>
+        `;
+      }
+    }
+
+    async function purchase() {
+      const id = getEventId();
+      const qty = parseInt(document.getElementById("qty").value);
+      const userId = getUserId();
+
+      const res = await apiPost("/purchase", {
+        userId,
+        eventId: id,
+        quantity: qty
+      });
+
+      document.getElementById("msg").innerText =
+        res.success ? "Purchase Successful!" : res.error;
+    }
+
+    loadDetail();
+  </script>
+
 </body>
 </html>

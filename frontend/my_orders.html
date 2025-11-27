@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta charset="UTF-8" />
+  <title>My Orders</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="api.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
-$END$
+
+  <div id="nav">
+    <a href="index.html">Home</a>
+    <a href="login.html">Login</a>
+  </div>
+
+  <h1>My Orders</h1>
+
+  <div id="orders"></div>
+
+  <script>
+    async function loadOrders() {
+      const userId = getUserId();
+      const res = await apiGet(`/orders?userId=${userId}`);
+
+      const container = document.getElementById("orders");
+
+      if (res.success) {
+        res.data.forEach(order => {
+          const div = document.createElement("div");
+          div.className = "card";
+
+          div.innerHTML = `
+            <p><strong>Order ID:</strong> ${order.orderId}</p>
+            <p><strong>Event:</strong> ${order.eventId}</p>
+            <p><strong>Quantity:</strong> ${order.quantity}</p>
+            <p><strong>Created At:</strong> ${order.createdAt}</p>
+          `;
+
+          container.appendChild(div);
+        });
+      }
+    }
+
+    loadOrders();
+  </script>
+
 </body>
 </html>

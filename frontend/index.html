@@ -1,10 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta charset="UTF-8" />
+  <title>Event List</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="api.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
-$END$
+
+  <div id="nav">
+    <a href="login.html">Login</a>
+    <a href="my_orders.html">My Orders</a>
+  </div>
+
+  <h1>Events</h1>
+
+  <div id="list"></div>
+
+  <script>
+    async function loadEvents() {
+      const res = await apiGet("/events");
+      const container = document.getElementById("list");
+
+      if (res.success) {
+        res.data.forEach(ev => {
+          const div = document.createElement("div");
+          div.className = "card";
+
+          div.innerHTML = `
+            <h2>${ev.name}</h2>
+            <img src="${ev.imageUrl}" width="250" />
+            <p>${ev.description || ""}</p>
+            <p><strong>Remaining Tickets:</strong> ${ev.remainingTickets}</p>
+            <a href="event_detail.html?eventId=${ev.eventId}">
+              <button>View Details</button>
+            </a>
+          `;
+
+          container.appendChild(div);
+        });
+      }
+    }
+
+    loadEvents();
+  </script>
+
 </body>
 </html>

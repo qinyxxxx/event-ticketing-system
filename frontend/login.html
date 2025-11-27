@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="api.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
-$END$
+
+  <h1>Login</h1>
+
+  <div class="card">
+    <input id="userId" placeholder="User ID" /><br/>
+    <input id="password" placeholder="Password" type="password" /><br/>
+    <button onclick="login()">Login</button>
+    <p id="msg" style="color:red;"></p>
+  </div>
+
+  <script>
+    async function login() {
+      const userId = document.getElementById("userId").value;
+      const password = document.getElementById("password").value;
+
+      const res = await apiPost("/login", { userId, password });
+
+      if (res.success) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.userId);
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("msg").innerText = res.error;
+      }
+    }
+  </script>
+
 </body>
 </html>

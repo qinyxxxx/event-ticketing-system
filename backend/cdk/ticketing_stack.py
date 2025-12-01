@@ -49,7 +49,7 @@ class TicketingStack(cdk.Stack):
         )
 
         # ============================================================
-        # 3. Create Lambdas (Handlers are empty — business needed)
+        # 3. Create Lambdas
         # ============================================================
         lambda_functions = {}
         lambda_names = [
@@ -78,9 +78,6 @@ class TicketingStack(cdk.Stack):
             )
 
             lambda_functions[name] = fn
-
-            # TODO
-            # Each handler must write its business logic
             events_table.grant_read_write_data(fn)
             orders_table.grant_read_write_data(fn)
             order_queue.grant_send_messages(fn)
@@ -88,55 +85,70 @@ class TicketingStack(cdk.Stack):
         # ============================================================
         # 4. API Gateway structure
         # ============================================================
-        # TODO (Eileen: API Gateway)
-        # - Add CORS if needed
-        # - Add request validation if needed
-        # - Add auth (if later required)
-        # ============================================================
-        api = apigw.RestApi(self, "TicketingAPI")
-
-        # /register
-        api.root.add_resource("register").add_method(
-            "POST", apigw.LambdaIntegration(lambda_functions["register"])
+        api = apigw.RestApi(
+            self, 
+            "TicketingAPI",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=["*"],
+                allow_methods=["GET", "POST", "OPTIONS"],
+                allow_headers=["Content-Type", "Authorization"]
+            )
         )
 
-        # /login
-        api.root.add_resource("login").add_method(
-            "POST", apigw.LambdaIntegration(lambda_functions["login"])
+        cors_response = apigw.MethodResponse(
+            status_code="200",
+            response_parameters={
+                "method.response.header.Access-Control-Allow-Origin": True
+            }
         )
 
-        # /events
-        events = api.root.add_resource("events")
-        events.add_method(
-            "GET",
-            apigw.LambdaIntegration(lambda_functions["get_events"])
-        )
-
-        # /events/{eventId}
-        event_detail = events.add_resource("{eventId}")
-        event_detail.add_method(
-            "GET",
-            apigw.LambdaIntegration(lambda_functions["get_event_detail"])
-        )
-
-        # /purchase
-        api.root.add_resource("purchase").add_method(
+        register_resource = api.root.add_resource("register")
+        register_resource.add_method(
             "POST",
-            apigw.LambdaIntegration(lambda_functions["purchase"])
+            apigw.LambdaIntegration(lambda_functions["register"]),
+            method_responses=[cors_response]
         )
 
-        # /orders
-        orders = api.root.add_resource("orders")
-        orders.add_method(
-            "GET",
-            apigw.LambdaIntegration(lambda_functions["get_orders"])
+        login_resource = api.root.add_resource("login")
+        login_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(lambda_functions["login"]),
+            method_responses=[cors_response]
         )
 
-        # /orders/{orderId}
-        order_detail = orders.add_resource("{orderId}")
-        order_detail.add_method(
+        events_resource = api.root.add_resource("events")
+        events_resource.add_method(
             "GET",
-            apigw.LambdaIntegration(lambda_functions["get_order_detail"])
+            apigw.LambdaIntegration(lambda_functions["get_events"]),
+            method_responses=[cors_response]
+        )
+
+        event_detail_resource = events_resource.add_resource("{eventId}")
+        event_detail_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(lambda_functions["get_event_detail"]),
+            method_responses=[cors_response]
+        )
+
+        purchase_resource = api.root.add_resource("purchase")
+        purchase_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(lambda_functions["purchase"]),
+            method_responses=[cors_response]
+        )
+
+        orders_resource = api.root.add_resource("orders")
+        orders_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(lambda_functions["get_orders"]),
+            method_responses=[cors_response]
+        )
+
+        order_detail_resource = orders_resource.add_resource("{orderId}")
+        order_detail_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(lambda_functions["get_order_detail"]),
+            method_responses=[cors_response]
         )
 
         # ============================================================

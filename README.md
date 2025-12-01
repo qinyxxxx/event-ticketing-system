@@ -1,5 +1,8 @@
 # Event Ticketing System (Serverless Ticketmaster Clone)
 
+## Frontend URL:
+https://d1qkuy63z658ec.cloudfront.net
+
 ## Overview
 
 This is a cloud-native, serverless ticketing platform inspired by Ticketmaster.

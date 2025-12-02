@@ -1,7 +1,7 @@
 /********************************************
  *  API CONFIG
  ********************************************/
-const BASE_URL = "https://your-api-id.execute-api.region.amazonaws.com/prod"; // TODO: replace
+const BASE_URL = "https://rbxxazg0u1.execute-api.us-east-1.amazonaws.com/prod";
 const USE_MOCK = true;   // true=mock, false=real backend
 
 /********************************************

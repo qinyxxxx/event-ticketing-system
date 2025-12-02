@@ -5,12 +5,13 @@ import os
 dynamodb = boto3.resource('dynamodb')
 orders_table = dynamodb.Table(os.environ['ORDERS_TABLE'])
 
+
 def lambda_handler(event, context):
     try:
         # Read userId from query parameters
         query_params = event.get('queryStringParameters') or {}
         user_id = query_params.get('userId', '')
-        
+
         if not user_id:
             return {
                 "statusCode": 400,
@@ -23,15 +24,19 @@ def lambda_handler(event, context):
                     "error": "userId query parameter is required"
                 })
             }
-        
-        # Scan and filter by userId (for demo - in production use GSI)
-        response = orders_table.scan(
-            FilterExpression='userId = :uid',
-            ExpressionAttributeValues={':uid': user_id}
+
+        # Query orders by userId using GSI (UserOrdersIndex)
+        # GSI: partition key = userId, sort key = createdAt
+        response = orders_table.query(
+            IndexName='UserOrdersIndex',
+            KeyConditionExpression='userId = :uid',
+            ExpressionAttributeValues={':uid': user_id},
+            # Sort descending by createdAt (newest first)
+            ScanIndexForward=False
         )
-        
+
         orders = response.get('Items', [])
-        
+
         # Format orders for API response
         formatted_orders = []
         for item in orders:
@@ -40,7 +45,7 @@ def lambda_handler(event, context):
                 'eventId': item.get('eventId'),
                 'quantity': int(item.get('quantity', 0)) if 'quantity' in item else 0
             })
-        
+
         return {
             "statusCode": 200,
             "headers": {

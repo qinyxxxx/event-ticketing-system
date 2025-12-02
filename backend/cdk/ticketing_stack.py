@@ -16,23 +16,55 @@ class TicketingStack(cdk.Stack):
         # ============================================================
         # 1. DynamoDB Tables
         # ============================================================
-        # TODO (Bo)
-        # - Define the exact schema (attributes, types)
-        # - Add GSIs if needed (for user orders, etc.)
-        # - Preload seed events after deployment (optional)
+        # EventsTable Schema:
+        # - eventId (String, PK)
+        # - name (String)
+        # - description (String)
+        # - imageUrl (String)
+        # - remainingTickets (Number)
         # ============================================================
         events_table = dynamodb.Table(
             self, "EventsTable",
             partition_key=dynamodb.Attribute(
                 name="eventId",
                 type=dynamodb.AttributeType.STRING
-            )
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=cdk.RemovalPolicy.DESTROY
         )
 
+        # ============================================================
+        # OrdersTable Schema:
+        # - orderId (String, PK)
+        # - userId (String) - used in GSI
+        # - eventId (String)
+        # - quantity (Number)
+        # - status (String) - pending/confirmed
+        # - createdAt (String) - ISO timestamp
+        #
+        # GSI: UserOrdersIndex
+        # - userId (String, PK)
+        # - createdAt (String, SK) - for sorting by time
+        # ============================================================
         orders_table = dynamodb.Table(
             self, "OrdersTable",
             partition_key=dynamodb.Attribute(
                 name="orderId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=cdk.RemovalPolicy.DESTROY
+        )
+        
+        # Add GSI for querying orders by userId
+        orders_table.add_global_secondary_index(
+            index_name="UserOrdersIndex",
+            partition_key=dynamodb.Attribute(
+                name="userId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="createdAt",
                 type=dynamodb.AttributeType.STRING
             )
         )
@@ -40,13 +72,22 @@ class TicketingStack(cdk.Stack):
         # ============================================================
         # 2. SQS (OrderCreated Queue)
         # ============================================================
-        # TODO (Bo)
-        # - Create a consumer Lambda to process order-created events
-        # - Write SQS → Lambda integration
+        # Dead Letter Queue for failed order processing
+        # Messages that fail processing after maxReceiveCount will be sent here
         # ============================================================
+        order_dlq = sqs.Queue(
+            self, "OrderCreatedDLQ",
+            # Keep failed messages for 14 days
+            retention_period=cdk.Duration.days(14)
+        )
+
         order_queue = sqs.Queue(
             self, "OrderCreatedQueue",
-            visibility_timeout=cdk.Duration.seconds(30)
+            visibility_timeout=cdk.Duration.seconds(30),
+            dead_letter_queue=sqs.DeadLetterQueue(
+                max_receive_count=3,  # Retry 3 times before sending to DLQ
+                queue=order_dlq
+            )
         )
 
         order_consumer_lambda = _lambda.Function(
@@ -109,7 +150,7 @@ class TicketingStack(cdk.Stack):
         # 4. API Gateway structure
         # ============================================================
         api = apigw.RestApi(
-            self, 
+            self,
             "TicketingAPI",
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=["*"],

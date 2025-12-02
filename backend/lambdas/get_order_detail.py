@@ -5,11 +5,12 @@ import os
 dynamodb = boto3.resource('dynamodb')
 orders_table = dynamodb.Table(os.environ['ORDERS_TABLE'])
 
+
 def lambda_handler(event, context):
     try:
         # Read orderId from pathParameters
         order_id = event.get('pathParameters', {}).get('orderId')
-        
+
         if not order_id:
             return {
                 "statusCode": 400,
@@ -22,10 +23,10 @@ def lambda_handler(event, context):
                     "error": "orderId is required"
                 })
             }
-        
+
         # Get item from OrdersTable
         response = orders_table.get_item(Key={'orderId': order_id})
-        
+
         if 'Item' not in response:
             return {
                 "statusCode": 404,
@@ -38,14 +39,17 @@ def lambda_handler(event, context):
                     "error": "Order not found"
                 })
             }
-        
+
         item = response['Item']
         order_detail = {
             'orderId': item.get('orderId'),
             'eventId': item.get('eventId'),
-            'quantity': int(item.get('quantity', 0)) if 'quantity' in item else 0
+            'quantity': int(item.get('quantity', 0)) if 'quantity' in item else 0,
+            'status': item.get('status', 'unknown'),
+            'userId': item.get('userId', ''),
+            'createdAt': item.get('createdAt', '')
         }
-        
+
         return {
             "statusCode": 200,
             "headers": {

@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_apigateway as apigw,
     aws_sqs as sqs,
+    aws_lambda_event_sources as lambda_event_sources,
 )
 from constructs import Construct
 
@@ -46,6 +47,28 @@ class TicketingStack(cdk.Stack):
         order_queue = sqs.Queue(
             self, "OrderCreatedQueue",
             visibility_timeout=cdk.Duration.seconds(30)
+        )
+
+        order_consumer_lambda = _lambda.Function(
+            self,
+            "order-consumer-lambda",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="order_consumer.lambda_handler",
+            code=_lambda.Code.from_asset("../lambdas"),
+            timeout=cdk.Duration.seconds(30),
+            environment={
+                "ORDERS_TABLE": orders_table.table_name
+            }
+        )
+
+        orders_table.grant_read_write_data(order_consumer_lambda)
+        order_queue.grant_consume_messages(order_consumer_lambda)
+
+        order_consumer_lambda.add_event_source(
+            lambda_event_sources.SqsEventSource(
+                order_queue,
+                batch_size=10
+            )
         )
 
         # ============================================================

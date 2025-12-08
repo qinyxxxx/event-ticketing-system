@@ -1,7 +1,7 @@
 # Event Ticketing System (Serverless Ticketmaster Clone)
 
 ## Frontend URL:
-https://d1qkuy63z658ec.cloudfront.net
+https://d1zlgeepeheq00.cloudfront.net/
 
 ## Overview
 

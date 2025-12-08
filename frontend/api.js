@@ -2,7 +2,7 @@
  *  API CONFIG
  ********************************************/
 const BASE_URL = "https://rbxxazg0u1.execute-api.us-east-1.amazonaws.com/prod";
-const USE_MOCK = true;   // true=mock, false=real backend
+const USE_MOCK = false;   // true=mock, false=real backend
 
 /********************************************
  *  GET TOKEN / USER

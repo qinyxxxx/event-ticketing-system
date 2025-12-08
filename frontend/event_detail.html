@@ -6,6 +6,19 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="api.js"></script>
   <script src="nav.js"></script>
+  <style>
+    .event-img img {
+      width: 250px;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .event-img {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
 
@@ -35,16 +48,28 @@
 
         div.className = "card";
         div.innerHTML = `
-          <h2>${ev.name}</h2>
-          <img src="${ev.imageUrl}" width="300" />
-          <p>${ev.description || ""}</p>
-          <p><strong>Remaining Tickets:</strong> ${ev.remainingTickets}</p>
+<div class="event-detail-container">
+  <div class="event-img">
+    <img src="${ev.imageUrl}" />
+  </div>
 
-          <input id="qty" type="number" min="1" value="1" /><br/>
-          <button onclick="purchase()">Purchase</button>
+  <h2>${ev.name}</h2>
+  <p>${ev.description || ""}</p>
+  <p><strong>Performer:</strong> ${ev.performer || "N/A"}</p>
+  <p><strong>Venue:</strong> ${ev.venue || "N/A"} (${ev.city || ""})</p>
+  <p><strong>Date:</strong> ${ev.date || "N/A"}</p>
+  <p><strong>Price:</strong> $${ev.price || "N/A"}</p>
+  <p><strong>Category:</strong> ${ev.category || "N/A"}</p>
+  <p><strong>Remaining Tickets:</strong> ${ev.remainingTickets}</p>
 
-          <p id="msg" style="color: green; margin-top:10px;"></p>
-        `;
+  <div style="margin-top:10px;">
+    <input id="qty" type="number" min="1" value="1" />
+    <button onclick="purchase()">Purchase</button>
+  </div>
+
+  <p id="msg" style="color: green; margin-top:10px;"></p>
+</div>
+`;
       }
     }
 

@@ -109,7 +109,13 @@ async function realGet(path) {
     method: "GET",
     headers: { Authorization: getToken() }
   });
-  return res.json();
+
+  const outer = await res.json();
+  try {
+    return JSON.parse(outer.body);   // inner JSON
+  } catch (e) {
+    return outer;  // fallback
+  }
 }
 
 async function realPost(path, body) {
@@ -121,7 +127,13 @@ async function realPost(path, body) {
     },
     body: JSON.stringify(body)
   });
-  return res.json();
+
+  const outer = await res.json();
+  try {
+    return JSON.parse(outer.body);
+  } catch (e) {
+    return outer;
+  }
 }
 
 /********************************************

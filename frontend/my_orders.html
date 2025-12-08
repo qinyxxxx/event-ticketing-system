@@ -31,11 +31,23 @@
           div.className = "card";
 
           div.innerHTML = `
-            <p><strong>Order ID:</strong> ${order.orderId}</p>
-            <p><strong>Event:</strong> ${order.eventId}</p>
-            <p><strong>Quantity:</strong> ${order.quantity}</p>
-            <p><strong>Created At:</strong> ${order.createdAt}</p>
-          `;
+<div class="order-row" style="display:flex; gap:20px; align-items:flex-start;">
+  <div class="order-img" style="width:320px; height:220px; flex-shrink:0; align-self:flex-start;">
+    <img src="${order.event?.imageUrl || ''}" style="width:320px; height:220px; object-fit:cover; border-radius:6px;" />
+  </div>
+
+  <div class="order-info" style="flex:1; text-align:left;">
+    <p><strong>Order ID:</strong> ${order.orderId}</p>
+    <p><strong>Event Name:</strong> ${order.event?.name || "N/A"}</p>
+    <p><strong>Performer:</strong> ${order.event?.performer || "N/A"}</p>
+    <p><strong>Venue:</strong> ${order.event?.venue || "N/A"} (${order.event?.city || ""})</p>
+    <p><strong>Date:</strong> ${order.event?.date || "N/A"}</p>
+    <p><strong>Price:</strong> $${order.event?.price || "N/A"}</p>
+    <p><strong>Quantity:</strong> ${order.quantity}</p>
+    <p><strong>Ordered At:</strong> ${order.createdAt}</p>
+  </div>
+</div>
+`;
 
           container.appendChild(div);
         });

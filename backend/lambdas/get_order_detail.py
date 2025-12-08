@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+from datetime import datetime
 
 dynamodb = boto3.resource('dynamodb')
 orders_table = dynamodb.Table(os.environ['ORDERS_TABLE'])
@@ -41,13 +42,20 @@ def lambda_handler(event, context):
             }
 
         item = response['Item']
+        raw_created_at = item.get('createdAt', '')
+        formatted_created_at = raw_created_at
+        try:
+            dt = datetime.fromisoformat(raw_created_at.replace('Z', '+00:00'))
+            formatted_created_at = dt.strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            pass
         order_detail = {
             'orderId': item.get('orderId'),
             'eventId': item.get('eventId'),
             'quantity': int(item.get('quantity', 0)) if 'quantity' in item else 0,
             'status': item.get('status', 'unknown'),
             'userId': item.get('userId', ''),
-            'createdAt': item.get('createdAt', '')
+            'createdAt': formatted_created_at
         }
 
         return {

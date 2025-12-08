@@ -6,6 +6,33 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="api.js"></script>
   <script src="nav.js"></script>
+  <style>
+    .card {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .event-row {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .event-img img {
+      width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .event-img {
+      width: 300px;
+      height: 200px;
+      flex-shrink: 0;
+    }
+    .event-info {
+      flex: 1;
+    }
+  </style>
 </head>
 <body>
 
@@ -29,13 +56,24 @@
           div.className = "card";
 
           div.innerHTML = `
-            <h2>${ev.name}</h2>
-            <img src="${ev.imageUrl}" width="250" />
-            <p>${ev.description || ""}</p>
-            <p><strong>Remaining Tickets:</strong> ${ev.remainingTickets}</p>
-            <a href="event_detail.html?eventId=${ev.eventId}">
-              <button>View Details</button>
-            </a>
+            <div class="event-row">
+              <div class="event-img">
+                <img src="${ev.imageUrl}" />
+              </div>
+              <div class="event-info">
+                <h2>${ev.name}</h2>
+                <p>${ev.description || ""}</p>
+                <p><strong>Performer:</strong> ${ev.performer || "N/A"}</p>
+                <p><strong>Venue:</strong> ${ev.venue || "N/A"} (${ev.city || ""})</p>
+                <p><strong>Date:</strong> ${ev.date || "N/A"}</p>
+                <p><strong>Price:</strong> $${ev.price || "N/A"}</p>
+                <p><strong>Category:</strong> ${ev.category || "N/A"}</p>
+                <p><strong>Remaining Tickets:</strong> ${ev.remainingTickets}</p>
+                <a href="event_detail.html?eventId=${ev.eventId}">
+                  <button>View Details</button>
+                </a>
+              </div>
+            </div>
           `;
 
           container.appendChild(div);

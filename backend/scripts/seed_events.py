@@ -16,37 +16,67 @@ SAMPLE_EVENTS = [
     {
         "eventId": "e001",
         "name": "Summer Music Festival 2026",
-        "description": "Join us for an amazing outdoor music festival featuring top artists from around the world. Food trucks, drinks, and great vibes!",
+        "description": "An outdoor summer festival featuring top international musicians.",
         "imageUrl": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800",
-        "remainingTickets": 500
+        "remainingTickets": 500,
+        "performer": "Global Artists Lineup",
+        "venue": "Central Park Open Grounds",
+        "city": "New York, NY",
+        "date": "2026-07-15",
+        "price": 129,
+        "category": "Music Festival"
     },
     {
         "eventId": "e002",
         "name": "Tech Conference 2026",
-        "description": "Annual technology conference with keynote speakers, workshops, and networking opportunities. Learn about the latest trends in AI, cloud computing, and software engineering.",
+        "description": "Annual technology conference with AI, cloud computing, and software engineering sessions.",
         "imageUrl": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
-        "remainingTickets": 200
+        "remainingTickets": 200,
+        "performer": "Industry Leaders & Keynote Speakers",
+        "venue": "San Jose Convention Center",
+        "city": "San Jose, CA",
+        "date": "2026-09-05",
+        "price": 399,
+        "category": "Technology"
     },
     {
         "eventId": "e003",
         "name": "Basketball Championship Finals",
-        "description": "Watch the championship finals live! Experience the excitement of professional basketball with amazing plays and intense competition.",
+        "description": "Watch the intense finals of the professional basketball league!",
         "imageUrl": "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800",
-        "remainingTickets": 1000
+        "remainingTickets": 1000,
+        "performer": "Pro League Finalists",
+        "venue": "Staples Center",
+        "city": "Los Angeles, CA",
+        "date": "2026-06-12",
+        "price": 250,
+        "category": "Sports"
     },
     {
         "eventId": "e004",
         "name": "Comedy Night Stand-Up",
-        "description": "Laugh your heart out with top comedians performing live stand-up comedy. Perfect for a fun night out with friends!",
-        "imageUrl": "https://images.unsplash.com/photo-1500099817043-86d46001d069?w=800",
-        "remainingTickets": 150
+        "description": "Top comedians performing live stand-up comedy.",
+        "imageUrl": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800",
+        "remainingTickets": 150,
+        "performer": "Headliner Comedians",
+        "venue": "Downtown Theater Hall",
+        "city": "Boston, MA",
+        "date": "2026-03-22",
+        "price": 49,
+        "category": "Comedy"
     },
     {
         "eventId": "e005",
         "name": "Art Exhibition: Modern Masters",
-        "description": "Explore contemporary art from renowned artists. Gallery tour, artist talks, and exclusive preview available.",
+        "description": "Contemporary art collection with guided tours and artist meet-ups.",
         "imageUrl": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800",
-        "remainingTickets": 80
+        "remainingTickets": 80,
+        "performer": "Featured Modern Artists",
+        "venue": "Metropolitan Art Gallery",
+        "city": "Chicago, IL",
+        "date": "2026-04-10",
+        "price": 35,
+        "category": "Art"
     }
 ]
 

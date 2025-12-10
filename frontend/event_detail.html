@@ -76,10 +76,8 @@
     async function purchase() {
       const id = getEventId();
       const qty = parseInt(document.getElementById("qty").value);
-      const userId = getUserId();
 
       const res = await apiPost("/purchase", {
-        userId,
         eventId: id,
         quantity: qty
       });

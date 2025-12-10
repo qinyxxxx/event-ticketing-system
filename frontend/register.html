@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="api.js"></script>
+  <script src="nav.js"></script>
+</head>
+<body>
+
+  <h1>Register</h1>
+
+  <div class="card">
+    <input id="userId" placeholder="User ID" /><br/>
+    <input id="password" placeholder="Password" type="password" /><br/>
+    <button onclick="registerUser()">Register</button>
+    <p id="msg" style="color:red;"></p>
+
+    <p style="margin-top: 15px;">
+      Already have an account?
+      <a href="login.html" style="color:#2563eb;">Login</a>
+    </p>
+  </div>
+
+  <script>
+    async function registerUser() {
+      const userId = document.getElementById("userId").value;
+      const password = document.getElementById("password").value;
+
+      if (!userId || !password) {
+        document.getElementById("msg").innerText = "Please fill all fields.";
+        return;
+      }
+
+      const res = await apiPost("/register", { userId, password });
+
+      if (res.success) {
+        // auto-login after registration
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", userId);
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("msg").innerText = res.error || "Registration failed.";
+      }
+    }
+  </script>
+
+</body>
+</html>

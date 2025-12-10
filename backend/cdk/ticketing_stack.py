@@ -70,6 +70,21 @@ class TicketingStack(cdk.Stack):
         )
 
         # ============================================================
+        # UsersTable Schema:
+        # - userId (String, PK)
+        # - password (String)
+        # ============================================================
+        users_table = dynamodb.Table(
+            self, "UsersTable",
+            partition_key=dynamodb.Attribute(
+                name="userId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=cdk.RemovalPolicy.DESTROY
+        )
+
+        # ============================================================
         # 2. SQS (OrderCreated Queue)
         # ============================================================
         # Dead Letter Queue for failed order processing
@@ -137,6 +152,7 @@ class TicketingStack(cdk.Stack):
                 environment={
                     "EVENTS_TABLE": events_table.table_name,
                     "ORDERS_TABLE": orders_table.table_name,
+                    "USERS_TABLE": users_table.table_name,
                     "QUEUE_URL": order_queue.queue_url
                 }
             )
@@ -145,6 +161,7 @@ class TicketingStack(cdk.Stack):
             events_table.grant_read_write_data(fn)
             orders_table.grant_read_write_data(fn)
             order_queue.grant_send_messages(fn)
+            users_table.grant_read_write_data(fn)
 
         # ============================================================
         # 4. API Gateway structure

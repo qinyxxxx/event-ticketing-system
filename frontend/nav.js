@@ -15,6 +15,7 @@ function renderNav() {
     nav.innerHTML = `
       <a href="index.html">Home</a>
       <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
     `;
   }
 }

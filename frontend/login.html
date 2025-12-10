@@ -14,23 +14,50 @@
   <div class="card">
     <input id="userId" placeholder="User ID" /><br/>
     <input id="password" placeholder="Password" type="password" /><br/>
-    <button onclick="login()">Login</button>
+    <button type="button" onclick="login()">Login</button>
     <p id="msg" style="color:red;"></p>
+    <p style="margin-top: 15px;">
+      Don't have an account?
+      <a href="register.html" style="color:#2563eb;">Sign up</a>
+    </p>
   </div>
 
   <script>
     async function login() {
+      console.log("here is login");
       const userId = document.getElementById("userId").value;
       const password = document.getElementById("password").value;
+      console.log("userid:", userId);
+      console.log("password:", password);
 
-      const res = await apiPost("/login", { userId, password });
+      try {
+        const res = await apiPost("/login", { userId, password });
+        console.log("login api response:", res);
 
-      if (res.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userId", res.data.userId);
+        let parsed = res;
+        if (res && typeof res.body === "string" && res.success === undefined) {
+          try {
+            parsed = JSON.parse(res.body);
+            console.log("parsed login body:", parsed);
+          } catch (e) {
+            console.error("failed to parse login body", e);
+          }
+        }
+
+        if (!parsed || parsed.success !== true) {
+          const msg = (parsed && parsed.error) || "Error userid or password.";
+          document.getElementById("msg").innerText = msg;
+          return;
+        }
+
+        // Login successful
+        localStorage.setItem("token", parsed.data.token);
+        localStorage.setItem("userId", parsed.data.userId);
         window.location.href = "index.html";
-      } else {
-        document.getElementById("msg").innerText = res.error;
+      } catch (e) {
+        console.error("login error:", e);
+        document.getElementById("msg").innerText =
+          "Login failed due to a network or server error.";
       }
     }
   </script>

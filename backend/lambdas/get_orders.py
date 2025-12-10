@@ -5,6 +5,7 @@ import boto3
 import os
 
 from decimal import Decimal
+from utils.auth import verify_token, auth_response_401
 
 
 def _normalize_decimals(value):
@@ -25,22 +26,11 @@ events_table = dynamodb.Table(os.environ['EVENTS_TABLE'])
 
 def lambda_handler(event, context):
     try:
-        # Read userId from query parameters
-        query_params = event.get('queryStringParameters') or {}
-        user_id = query_params.get('userId', '')
-
-        if not user_id:
-            return {
-                "statusCode": 400,
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                "body": json.dumps({
-                    "success": False,
-                    "error": "userId query parameter is required"
-                })
-            }
+        # Authenticate user from token
+        try:
+            user_id = verify_token(event)
+        except:
+            return auth_response_401()
 
         # Query orders by userId using GSI (UserOrdersIndex)
         # GSI: partition key = userId, sort key = createdAt

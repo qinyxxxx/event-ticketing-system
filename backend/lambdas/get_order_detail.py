@@ -2,6 +2,7 @@ import json
 import boto3
 import os
 from datetime import datetime
+from utils.auth import verify_token, auth_response_401
 
 dynamodb = boto3.resource('dynamodb')
 orders_table = dynamodb.Table(os.environ['ORDERS_TABLE'])
@@ -9,6 +10,12 @@ orders_table = dynamodb.Table(os.environ['ORDERS_TABLE'])
 
 def lambda_handler(event, context):
     try:
+        # Authenticate user
+        try:
+            user_id = verify_token(event)
+        except:
+            return auth_response_401()
+
         # Read orderId from pathParameters
         order_id = event.get('pathParameters', {}).get('orderId')
 
@@ -42,6 +49,10 @@ def lambda_handler(event, context):
             }
 
         item = response['Item']
+        # Ensure the authenticated user is the owner of the order
+        if item.get("userId") != user_id:
+            return auth_response_401()
+
         raw_created_at = item.get('createdAt', '')
         formatted_created_at = raw_created_at
         try:

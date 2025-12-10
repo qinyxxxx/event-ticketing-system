@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from botocore.exceptions import ClientError
+from utils.auth import verify_token, auth_response_401
 
 dynamodb = boto3.resource('dynamodb')
 sqs = boto3.client('sqs')
@@ -14,17 +15,22 @@ queue_url = os.environ['QUEUE_URL']
 
 def lambda_handler(event, context):
     try:
-        # Parse body: userId, eventId, quantity
+        # Authenticate user from token
+        try:
+            user_id = verify_token(event)
+        except:
+            return auth_response_401()
+
+        # Parse body: eventId, quantity
         body = json.loads(event.get('body', '{}'))
-        user_id = body.get('userId', '')
         event_id = body.get('eventId', '')
-        
+
         try:
             quantity = int(body.get('quantity', 0))
         except (ValueError, TypeError):
             quantity = 0
-        
-        if not user_id or not event_id or quantity <= 0:
+
+        if not event_id or quantity <= 0:
             return {
                 "statusCode": 400,
                 "headers": {
@@ -33,7 +39,7 @@ def lambda_handler(event, context):
                 },
                 "body": json.dumps({
                     "success": False,
-                    "error": "userId, eventId, and quantity (positive) are required"
+                    "error": "eventId and quantity (positive) are required"
                 })
             }
         

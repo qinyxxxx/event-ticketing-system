@@ -4,6 +4,22 @@
 const BASE_URL = "https://rbxxazg0u1.execute-api.us-east-1.amazonaws.com/prod";
 const USE_MOCK = false;   // true=mock, false=real backend
 
+
+/********************************************
+ *  AUTH HELPERS
+ ********************************************/
+function isLoggedIn() {
+  return !!getToken();
+}
+
+function requireAuth() {
+  if (!getToken()) {
+    // not logged in → go to login page
+    window.location.href = "login.html";
+  }
+}
+
+
 /********************************************
  *  GET TOKEN / USER
  ********************************************/
@@ -110,11 +126,20 @@ async function realGet(path) {
     headers: { Authorization: getToken() }
   });
 
+  if (res.status === 401) {
+    if (path !== "/login") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      window.location.href = "login.html";
+    }
+    return;
+  }
+
   const outer = await res.json();
   try {
-    return JSON.parse(outer.body);   // inner JSON
+    return JSON.parse(outer.body);
   } catch (e) {
-    return outer;  // fallback
+    return outer;
   }
 }
 
@@ -127,6 +152,15 @@ async function realPost(path, body) {
     },
     body: JSON.stringify(body)
   });
+
+  if (res.status === 401) {
+    if (path !== "/login") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      window.location.href = "login.html";
+    }
+    return;
+  }
 
   const outer = await res.json();
   try {

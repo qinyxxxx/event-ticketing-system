@@ -74,6 +74,13 @@
     }
 
     async function purchase() {
+      // Check if user is logged in
+      if (!isLoggedIn()) {
+        alert("Please login first to purchase tickets");
+        window.location.href = "login.html";
+        return;
+      }
+
       const id = getEventId();
       const qty = parseInt(document.getElementById("qty").value);
 

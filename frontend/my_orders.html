@@ -20,6 +20,13 @@
 
   <script>
     async function loadOrders() {
+      // Check if user is logged in
+      if (!isLoggedIn()) {
+        alert("Please login first to view your orders");
+        window.location.href = "login.html";
+        return;
+      }
+
       const userId = getUserId();
       const res = await apiGet(`/orders?userId=${userId}`);
 

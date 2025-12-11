@@ -5,6 +5,7 @@ import os
 dynamodb = boto3.resource("dynamodb")
 users_table = dynamodb.Table(os.environ["USERS_TABLE"])
 
+
 def lambda_handler(event, context):
     try:
         # Read user info from body
@@ -51,6 +52,9 @@ def lambda_handler(event, context):
             "password": password
         })
 
+        # Generate token (same format as login) for auto-login after registration
+        token = f"token-{user_id}"
+
         return {
             "statusCode": 200,
             "headers": {
@@ -62,6 +66,8 @@ def lambda_handler(event, context):
             "body": json.dumps({
                 "success": True,
                 "data": {
+                    "token": token,
+                    "userId": user_id,
                     "message": "User created"
                 }
             })
